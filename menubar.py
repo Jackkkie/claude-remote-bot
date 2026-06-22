@@ -410,7 +410,8 @@ class ClaudeBotApp(rumps.App):
 
     def install_sudoers(self):
         # native admin auth dialog -> register a one-time passwordless pmset grant
-        rule = f"{USER} ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep *"
+        rule = (f"{USER} ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 0, "
+                f"/usr/bin/pmset -a disablesleep 1")
         inner = (
             f"echo '{rule}' > /etc/sudoers.d/claude-remote-bot-pmset && "
             f"chmod 440 /etc/sudoers.d/claude-remote-bot-pmset"

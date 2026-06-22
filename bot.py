@@ -428,8 +428,11 @@ async def cmd_session(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_whoami(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    ok = "✅ authorized" if authorized(chat_id) else "⛔️ not authorized"
-    await update.message.reply_text(f"chat_id: {chat_id}\n{ok}\nWORKDIR: {WORKDIR}")
+    if authorized(chat_id):
+        await update.message.reply_text(f"chat_id: {chat_id}\n✅ authorized\nWORKDIR: {WORKDIR}")
+    else:
+        # show the caller their own id (needed for setup) but nothing sensitive
+        await update.message.reply_text(f"chat_id: {chat_id}\n⛔️ not authorized")
 
 
 HELP_TEXT = (
@@ -451,12 +454,19 @@ HELP_TEXT = (
 
 
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    # once configured, don't leak details to strangers; empty allowlist = setup phase
+    if ALLOWED_CHAT_IDS and not authorized(chat_id):
+        await update.message.reply_text("⛔️ Not authorized. Send any message to see your chat_id.")
+        return
     await update.message.reply_text(HELP_TEXT)
 
 
 DEV_ROOT = os.path.expanduser(os.getenv("DEV_ROOT", "~/Developer"))
 # remote-control permission mode: acceptEdits (auto-accept edits) | auto | bypassPermissions (no checks)
 REMOTE_PERMISSION_MODE = os.getenv("REMOTE_PERMISSION_MODE", "acceptEdits")
+# bypassPermissions (/remote ... full) is OFF unless explicitly enabled — it removes all safety checks
+ALLOW_BYPASS = os.getenv("ALLOW_BYPASS", "").lower() in ("1", "true", "yes")
 CLAUDE_JSON = os.path.expanduser("~/.claude.json")
 
 
@@ -587,9 +597,14 @@ async def cmd_remote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = list(context.args or [])
     # extract mode (auto / full anywhere in args)
     perm = REMOTE_PERMISSION_MODE
+    bypass_blocked = False
     low = [a.lower() for a in args]
     if "full" in low or "bypass" in low:
-        perm = "bypassPermissions"
+        if ALLOW_BYPASS:
+            perm = "bypassPermissions"
+        else:
+            perm = "auto"  # bypass disabled by default; fall back to auto
+            bypass_blocked = True
         args = [a for a in args if a.lower() not in ("full", "bypass")]
     elif "auto" in low:
         perm = "auto"
@@ -631,9 +646,10 @@ async def cmd_remote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ Failed to start:\n{info}")
         return
 
+    note = "\n⚠️ bypass is disabled (used auto). Set ALLOW_BYPASS=1 in .env to enable." if bypass_blocked else ""
     await update.message.reply_text(
         f"🖥️ Remote control started (mode: {perm})\n"
-        f"📂 {repo}" + (f" — {label}" if label else "") + f"\n🧩 {info}\nGrabbing session URL…"
+        f"📂 {repo}" + (f" — {label}" if label else "") + f"\n🧩 {info}{note}\nGrabbing session URL…"
     )
     url = await capture_remote_url(sid)
     if url:
