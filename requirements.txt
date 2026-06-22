@@ -1,0 +1,4 @@
+python-telegram-bot>=21,<22
+python-dotenv>=1.0
+rumps>=0.4            # macOS menu bar app (menubar.py)
+# py2app>=0.28        # only needed to BUILD the .app bundle (optional)

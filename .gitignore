@@ -1,0 +1,21 @@
+# secrets / per-machine
+.env
+
+# python
+venv/
+__pycache__/
+*.pyc
+build/
+dist/
+
+# runtime state (created at run time)
+sessions.json
+remotes.json
+paused
+anim_off
+.menubar.lock
+
+# generated icon intermediates (the PNGs ARE committed; sources/intermediates are not)
+icons/*.svg
+icons/preview.*
+icons/*.iconset/
