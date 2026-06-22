@@ -45,10 +45,11 @@ def static_icons():
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='')), "running.png", 44)
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='opacity="0.32"')), "off.png", 44)
     # paused = bot + crescent moon badge bottom-right
+    # paused = sleeping face: closed eyes (horizontal) + crescent moon badge
     paused = ('<defs>'
               '<mask id="f"><rect x="0" y="0" width="24" height="24" fill="white"/>'
-              '<rect x="7.1" y="8.5" width="2.8" height="7.0" rx="1.4" fill="black"/>'
-              '<rect x="14.1" y="8.5" width="2.8" height="7.0" rx="1.4" fill="black"/>'
+              '<rect x="6.25" y="11.1" width="4.5" height="1.8" rx="0.9" fill="black"/>'
+              '<rect x="13.25" y="11.1" width="4.5" height="1.8" rx="0.9" fill="black"/>'
               '<circle cx="17" cy="17" r="7.1" fill="black"/></mask>'
               '<mask id="moon"><rect x="0" y="0" width="24" height="24" fill="black"/>'
               '<circle cx="17" cy="17" r="6.0" fill="white"/>'

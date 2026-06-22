@@ -40,7 +40,6 @@ APP_NAME = "Claude Remote Bot"
 PAUSE_FILE = os.path.join(BASE, "paused")          # shared with bot.py: exists => paused
 REMOTES_FILE = os.path.join(BASE, "remotes.json")  # shared with bot.py: remote-session metadata
 ANIM_OFF_FILE = os.path.join(BASE, "anim_off")     # exists => rolling animation off
-AWAKE_OFF_FILE = os.path.join(BASE, "awake_off")   # exists => stay-awake manually disabled (bot keeps running)
 ICON_DIR = os.path.join(BASE, "icons")
 ICON_RUN = os.path.join(ICON_DIR, "running.png")
 ICON_PAUSED = os.path.join(ICON_DIR, "paused.png")
@@ -179,10 +178,6 @@ def anim_enabled():
     return not os.path.exists(ANIM_OFF_FILE)
 
 
-def awake_enabled():
-    return not os.path.exists(AWAKE_OFF_FILE)
-
-
 class ClaudeBotApp(rumps.App):
     def __init__(self):
         super().__init__("", icon=(ICON_RUN if ICONS_OK else None),
@@ -301,9 +296,8 @@ class ClaudeBotApp(rumps.App):
                 notify("🟢 Claude bot resumed — accepting commands.")
         self.last_state = state
 
-        # stay awake when the bot is active AND the user hasn't disabled it
-        running_active = alive and not paused
-        want_awake = running_active and awake_enabled()
+        # pause = stop receiving AND release stay-awake (one "rest" state)
+        want_awake = alive and not paused
         cur = get_disablesleep()
         if cur != want_awake:
             set_disablesleep(want_awake)
@@ -319,25 +313,27 @@ class ClaudeBotApp(rumps.App):
             self.bot_item.title = "Receiving: 🟢 on  (click to pause)"
             static_icon, fb = ICON_RUN, "🤖"
 
-        if not running_active:
-            self.awake_item.title = "Stay awake: — (bot paused/off)"
+        if want_awake and cur:
+            self.awake_item.title = "Stay awake: 🟢 on — lid-closed OK"
             self.sudoers_needed = False
-        elif not awake_enabled():
-            self.awake_item.title = "Stay awake: ⚪️ off — Mac may sleep  (click to enable)"
-            self.sudoers_needed = False
-        elif cur:
-            self.awake_item.title = "Stay awake: 🟢 on — lid-closed OK  (click to disable)"
-            self.sudoers_needed = False
-        else:
+        elif want_awake and not cur:
             self.awake_item.title = "Stay awake: ⚠️ setup needed — click to set up"
             self.sudoers_needed = True
+        else:
+            self.awake_item.title = "Stay awake: 💤 released (paused/off)"
+            self.sudoers_needed = False
         self.anim_item.title = f"Animation: {'🟢 on' if anim_enabled() else '⚪️ off'}  (click to toggle)"
 
         sessions = remote_sessions()
         cnt = len(sessions)
         self.remotes_item.title = f"Remote sessions: {cnt}"
         self._cnt = cnt
-        if cnt > 0 and anim_enabled():
+        if (not alive) or paused:
+            # paused/down -> static sleeping (or off) face, no animation, no count
+            self._frames = None
+            self.title = ""
+            self._set_icon(static_icon, fb)
+        elif cnt > 0 and anim_enabled():
             # rolling set with the count baked in (10+ -> 9+ set); number is in the image
             self._frames = ROLL_SETS.get(cnt) or ROLL_SETS.get(99)
             self.title = ""
@@ -407,18 +403,14 @@ class ClaudeBotApp(rumps.App):
                     rumps.alert("Failed", "Couldn't add the login item. (Allow System Events automation if prompted.)")
 
     def on_awake_click(self, _):
-        # not set up yet -> run the setup; otherwise toggle stay-awake on/off
         if self.sudoers_needed:
             self.install_sudoers()
-            return
-        if os.path.exists(AWAKE_OFF_FILE):
-            try:
-                os.remove(AWAKE_OFF_FILE)  # re-enable stay-awake
-            except OSError:
-                pass
         else:
-            open(AWAKE_OFF_FILE, "w").close()  # disable stay-awake (bot keeps running)
-        self.refresh(None)
+            rumps.alert(
+                "Stay awake (sleep prevention)",
+                "When the bot is running, sleep is prevented (even lid-closed).\n"
+                "Pausing the bot releases it so the Mac can sleep. (Follows the bot state.)",
+            )
 
     def install_sudoers(self):
         # native admin auth dialog -> register a one-time passwordless pmset grant

@@ -13,7 +13,6 @@ sessions.json
 remotes.json
 paused
 anim_off
-awake_off
 .menubar.lock
 
 # generated icon intermediates (the PNGs ARE committed; sources/intermediates are not)
