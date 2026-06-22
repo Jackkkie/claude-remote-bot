@@ -45,17 +45,15 @@ def static_icons():
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='')), "running.png", 44)
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='opacity="0.32"')), "off.png", 44)
     # paused = bot + crescent moon badge bottom-right
-    # paused = sleeping face: closed eyes (horizontal) + crescent moon badge
-    paused = ('<defs>'
-              '<mask id="f"><rect x="0" y="0" width="24" height="24" fill="white"/>'
-              '<rect x="6.25" y="11.1" width="4.5" height="1.8" rx="0.9" fill="black"/>'
-              '<rect x="13.25" y="11.1" width="4.5" height="1.8" rx="0.9" fill="black"/>'
-              '<circle cx="17" cy="17" r="7.1" fill="black"/></mask>'
-              '<mask id="moon"><rect x="0" y="0" width="24" height="24" fill="black"/>'
-              '<circle cx="17" cy="17" r="6.0" fill="white"/>'
-              '<circle cx="19.7" cy="14.3" r="5.6" fill="black"/></mask></defs>'
-              '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#f)"/>'
-              '<rect x="10" y="10" width="14" height="14" fill="#000000" mask="url(#moon)"/>')
+    # paused = sleeping face: closed eyes (horizontal) + rising "zzz"
+    paused = ('<defs><mask id="f"><rect x="0" y="0" width="24" height="24" fill="white"/>'
+              '<rect x="5.0" y="12.4" width="5.2" height="1.9" rx="0.95" fill="black"/>'
+              '<rect x="13.8" y="12.4" width="5.2" height="1.9" rx="0.95" fill="black"/>'
+              '<text x="13.6" y="9.6" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="5.4" fill="black">z</text>'
+              '<text x="16.7" y="7.2" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="4.2" fill="black">z</text>'
+              '<text x="19.2" y="5.4" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="3.2" fill="black">z</text>'
+              '</mask></defs>'
+              '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#f)"/>')
     render(svg_wrap("0 0 24 24", 24, 24, paused), "paused.png", 44)
 
 

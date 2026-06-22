@@ -192,24 +192,24 @@ class ClaudeBotApp(rumps.App):
         self._target_speed = 0.7   # random target speed
         self._retarget = 0         # ticks until re-targeting
 
-        self.bot_item = rumps.MenuItem("Receiving: …", callback=self.toggle_pause)
+        self.status_item = rumps.MenuItem("…", callback=None)               # state summary (display-only)
+        self.primary_item = rumps.MenuItem("Pause", callback=self.toggle_pause)  # main control
+        self.remotes_item = rumps.MenuItem("Remote sessions: 0", callback=None)  # submenu
+        self.anim_item = rumps.MenuItem("Animate icon: …", callback=self.toggle_anim)
         self.awake_item = rumps.MenuItem("Stay awake: …", callback=self.on_awake_click)
-        self.anim_item = rumps.MenuItem("Animation: …", callback=self.toggle_anim)
-        self.remotes_item = rumps.MenuItem("Remote sessions: -", callback=None)
-        self.kill_item = rumps.MenuItem("Stop all remote sessions", callback=self.kill_remotes)
 
         self.menu = [
             rumps.MenuItem(f"✦ {APP_NAME}"),
+            self.status_item,
             None,
-            self.bot_item,
-            self.awake_item,
-            self.anim_item,
+            self.primary_item,
             None,
             self.remotes_item,
-            self.kill_item,
             None,
             rumps.MenuItem("Open log", callback=self.open_log),
-            rumps.MenuItem("Quit (app only)", callback=self.quit_app),
+            self.anim_item,
+            self.awake_item,
+            rumps.MenuItem("Quit (bot keeps running)", callback=self.quit_app),
         ]
 
         self.timer = rumps.Timer(self.refresh, 5)
@@ -303,31 +303,36 @@ class ClaudeBotApp(rumps.App):
             set_disablesleep(want_awake)
             cur = get_disablesleep()
 
-        if not alive:
-            self.bot_item.title = "Receiving: bot process down 🔴"
-            static_icon, fb = ICON_OFF, "🤖❌"
-        elif paused:
-            self.bot_item.title = "Receiving: ⏸️ paused  (click to resume)"
-            static_icon, fb = ICON_PAUSED, "🤖⏸️"
-        else:
-            self.bot_item.title = "Receiving: 🟢 on  (click to pause)"
-            static_icon, fb = ICON_RUN, "🤖"
-
-        if want_awake and cur:
-            self.awake_item.title = "Stay awake: 🟢 on — lid-closed OK"
-            self.sudoers_needed = False
-        elif want_awake and not cur:
-            self.awake_item.title = "Stay awake: ⚠️ setup needed — click to set up"
-            self.sudoers_needed = True
-        else:
-            self.awake_item.title = "Stay awake: 💤 released (paused/off)"
-            self.sudoers_needed = False
-        self.anim_item.title = f"Animation: {'🟢 on' if anim_enabled() else '⚪️ off'}  (click to toggle)"
-
         sessions = remote_sessions()
         cnt = len(sessions)
-        self.remotes_item.title = f"Remote sessions: {cnt}"
         self._cnt = cnt
+
+        # primary control (Pause/Resume) + static face per state
+        if not alive:
+            static_icon, fb = ICON_OFF, "🤖❌"
+            self.status_item.title = "○ Bot down (starting…)"
+            self.primary_item.title = "Resume"
+        elif paused:
+            static_icon, fb = ICON_PAUSED, "🤖💤"
+            self.status_item.title = "💤 Paused · Mac can sleep"
+            self.primary_item.title = "Resume"
+        else:
+            static_icon, fb = ICON_RUN, "🤖"
+            self.status_item.title = (f"● Active · {cnt} session{'s' if cnt != 1 else ''}"
+                                      if cnt > 0 else "● Active · listening")
+            self.primary_item.title = "Pause"
+
+        # stay-awake follows the bot state; only surface an action when setup is needed
+        if want_awake and not cur:
+            self.awake_item.title = "⚠️ Set up stay-awake…"
+            self.sudoers_needed = True
+        else:
+            self.sudoers_needed = False
+            self.awake_item.title = ("Stay awake: 🟢 on (while active)" if want_awake
+                                     else "Stay awake: 💤 off (paused)")
+        self.anim_item.title = f"Animate icon: {'🟢 on' if anim_enabled() else '⚪️ off'}"
+
+        self.remotes_item.title = f"Remote sessions: {cnt}"
         if (not alive) or paused:
             # paused/down -> static sleeping (or off) face, no animation, no count
             self._frames = None
@@ -358,6 +363,8 @@ class ClaudeBotApp(rumps.App):
                     rumps.MenuItem(f"🛑 {i}. {s['repo']} — {lbl}",
                                    callback=self._kill_remote(s["id"]))
                 )
+            self.remotes_item.add(rumps.separator)
+            self.remotes_item.add(rumps.MenuItem("Stop all", callback=self.kill_remotes))
         else:
             self.remotes_item.add(rumps.MenuItem("(none)"))
 
