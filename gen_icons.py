@@ -47,22 +47,22 @@ def static_icons():
     # paused = bot + crescent moon badge bottom-right
     # paused = sleeping face: closed eyes + rising "zzz" (engraved on the face, embossed outside)
     def _zs(c):
-        return (f'<text x="15.5" y="13.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="8.5" fill="{c}">z</text>'
-                f'<text x="24.5" y="11.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="10.5" fill="{c}">z</text>'
-                f'<text x="34.0" y="9.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="13" fill="{c}">z</text>')
+        return (f'<text x="16" y="11.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="10.5" fill="{c}">z</text>'
+                f'<text x="26" y="9.0" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="13.5" fill="{c}">z</text>'
+                f'<text x="36.5" y="6.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="17" fill="{c}">z</text>')
     paused = (
         '<defs>'
-        '<mask id="cut"><rect x="0" y="-4" width="47" height="28" fill="white"/>'
-        '<rect x="5.0" y="14.3" width="5.2" height="1.9" rx="0.95" fill="black"/>'
-        '<rect x="13.8" y="14.3" width="5.2" height="1.9" rx="0.95" fill="black"/>'
+        '<mask id="cut"><rect x="0" y="-11" width="54" height="35" fill="white"/>'
+        '<rect x="5.0" y="15.5" width="5.2" height="1.9" rx="0.95" fill="black"/>'
+        '<rect x="13.8" y="15.5" width="5.2" height="1.9" rx="0.95" fill="black"/>'
         f'{_zs("black")}</mask>'
-        '<mask id="outside"><rect x="0" y="-4" width="47" height="28" fill="white"/>'
+        '<mask id="outside"><rect x="0" y="-11" width="54" height="35" fill="white"/>'
         '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="black"/></mask>'
         '</defs>'
         '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#cut)"/>'
         f'<g mask="url(#outside)">{_zs("#000000")}</g>'
     )
-    render(svg_wrap("0 -4 47 28", 47, 28, paused), "paused.png", 44)
+    render(svg_wrap("0 -11 54 35", 54, 35, paused), "paused.png", 44)
 
 
 # ── app icon (.icns) ────────────────────────────────────────────────
