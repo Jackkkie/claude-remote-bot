@@ -52,7 +52,7 @@ def static_icons():
         '<path d="M13.7 14.4 Q16.2 16.7 18.7 14.4" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round"/>'
         '</mask></defs>'
         '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#cut)"/>'
-        '<text x="24" y="11.6" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="9" fill="#000000">z</text>'
+        '<text x="23.5" y="12.2" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="10.5" fill="#000000">z</text>'
         '<text x="30" y="6.8" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="12.5" fill="#000000">z</text>'
     )
     render(svg_wrap("0 0 37 24", 37, 24, paused), "paused.png", 44)
