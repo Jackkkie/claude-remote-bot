@@ -47,15 +47,15 @@ def static_icons():
     # paused = bot + crescent moon badge bottom-right
     # paused = sleeping face: closed downward-curved eyes (at the active eyes' position) + two rising z's
     paused = (
-        '<defs><mask id="cut"><rect x="0" y="0" width="32.5" height="24" fill="white"/>'
-        '<path d="M6 12 Q8.5 14.4 11 12" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-        '<path d="M13 12 Q15.5 14.4 18 12" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>'
+        '<defs><mask id="cut"><rect x="0" y="0" width="37" height="24" fill="white"/>'
+        '<path d="M5.3 14.4 Q7.8 16.7 10.3 14.4" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round"/>'
+        '<path d="M13.7 14.4 Q16.2 16.7 18.7 14.4" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round"/>'
         '</mask></defs>'
         '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#cut)"/>'
         '<text x="24" y="11.6" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="9" fill="#000000">z</text>'
-        '<text x="25.8" y="6.8" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="12.5" fill="#000000">z</text>'
+        '<text x="30" y="6.8" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="12.5" fill="#000000">z</text>'
     )
-    render(svg_wrap("0 0 32.5 24", 32.5, 24, paused), "paused.png", 44)
+    render(svg_wrap("0 0 37 24", 37, 24, paused), "paused.png", 44)
 
 
 # ── app icon (.icns) ────────────────────────────────────────────────
