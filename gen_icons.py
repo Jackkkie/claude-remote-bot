@@ -45,24 +45,17 @@ def static_icons():
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='')), "running.png", 44)
     render(svg_wrap("0 0 24 24", 24, 24, head.format(extra='opacity="0.32"')), "off.png", 44)
     # paused = bot + crescent moon badge bottom-right
-    # paused = sleeping face: closed eyes + rising "zzz" (engraved on the face, embossed outside)
-    def _zs(c):
-        return (f'<text x="16" y="11.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="10.5" fill="{c}">z</text>'
-                f'<text x="26" y="9.0" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="13.5" fill="{c}">z</text>'
-                f'<text x="36.5" y="6.5" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="17" fill="{c}">z</text>')
+    # paused = sleeping face: closed downward-curved eyes (at the active eyes' position) + two rising z's
     paused = (
-        '<defs>'
-        '<mask id="cut"><rect x="0" y="-11" width="54" height="35" fill="white"/>'
-        '<rect x="5.0" y="15.5" width="5.2" height="1.9" rx="0.95" fill="black"/>'
-        '<rect x="13.8" y="15.5" width="5.2" height="1.9" rx="0.95" fill="black"/>'
-        f'{_zs("black")}</mask>'
-        '<mask id="outside"><rect x="0" y="-11" width="54" height="35" fill="white"/>'
-        '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="black"/></mask>'
-        '</defs>'
+        '<defs><mask id="cut"><rect x="0" y="0" width="32.5" height="24" fill="white"/>'
+        '<path d="M6 12 Q8.5 14.4 11 12" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>'
+        '<path d="M13 12 Q15.5 14.4 18 12" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>'
+        '</mask></defs>'
         '<rect x="0.7" y="0.7" width="22.6" height="22.6" rx="8" fill="#000000" mask="url(#cut)"/>'
-        f'<g mask="url(#outside)">{_zs("#000000")}</g>'
+        '<text x="24" y="11.6" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="9" fill="#000000">z</text>'
+        '<text x="25.8" y="6.8" font-family="Helvetica Neue, Helvetica" font-weight="800" font-size="12.5" fill="#000000">z</text>'
     )
-    render(svg_wrap("0 -11 54 35", 54, 35, paused), "paused.png", 44)
+    render(svg_wrap("0 0 32.5 24", 32.5, 24, paused), "paused.png", 44)
 
 
 # ── app icon (.icns) ────────────────────────────────────────────────
